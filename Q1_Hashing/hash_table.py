@@ -69,20 +69,76 @@ class HashTable:
         self._size += 1
         return target
 
+    def locate (self, key):
+        """Return (slot index, probes) for key, or (None, probes) if absent."""
+        idx = self._hash(key)
+        start = idx
+        probes = 1
+        while True:
+            slot = self.slots[idx]
+            if slot is None:
+                return None, probes
+            if slot is not _TOMBSTONE and slot.key == key:
+                return idx, probes
+            idx = (idx + 1) % self._capacity
+            if idx == start:
+                return None, probes
+            probes += 1
+
+    def search(self, key):
+        """Return the value stored for key. Raise KeyError if absent."""
+        idx, _ = self.locate(key)
+        if idx is None:
+            raise KeyError(key)
+        return self._slots[idx].value
+
+    def update(self, key, value):
+        """Replace the value for an existing key. Raise KeyError if absent."""
+        idx, _ = self.locate(key)
+        if idx is None:
+            raise KeyError(key)
+        self.slots[idx].value = value
+        return idx
+
+    def delete(self, key):
+        """Remove key, leaving a tombstone. Return the removed value"""
+        idx, _ = self.locate(key)
+        if idx is None:
+            raise KeyError(key)
+        value = self._slots[idx].value
+        self._slots[idx] = _TOMBSTONE
+        self._size -= 1
+        return value
+
+    def display(self):
+        """Print every slot's state (for testing and reporting purposes)"""
+        for i, slot in enumerate(self._slots):
+            if slot is None:
+                state = "empty"
+            elif slot is _TOMBSTONE:
+                state = "tombstone"
+            else:
+                state = f"{slot.key!r} -> {slot.value!r}"
+            print(f"[{i}] {state}")
 
 if __name__ == "__main__":
     table = HashTable(7)
-    print("10 ->", table.insert(10, "A"))
-    print("17 ->", table.insert(17, "B"))
-    print("24 ->", table.insert(24, "C"))
+    for key, value in [(10, "A"), (17, "B"), (24, "C")]:
+        table.insert(key, value)
 
-    # Pretend 17 was deleted (real delete comes in Piece 4)
-    table._slots[4] = _TOMBSTONE
-    table._size -= 1
+    print("Deleted 17, value was:", table.delete(17))
+    print("Locate 24 (slot, probes):", table.locate(24))
+    print("Search 24:", table.search(24))
+
+    table.update(24, "C-new")
+    print("After update, search 24:", table.search(24))
+    print("Delete 24:", table.delete(24))
 
     try:
-        table.insert(24, "C2")
-    except ValueError as error:
-        print("Rejected:", error)
+        table.search(24)
+    except KeyError as error:
+        print("Search 24 after delete -> not found:", error)
 
-    print("31 ->", table.insert(31, "D"))
+    print("Insert 31 -> slot", table.insert(31, "D"))
+    print("Size:", len(table), "| Load factor:", round(table.load_factor(), 2))
+    table.display()
