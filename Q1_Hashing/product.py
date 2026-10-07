@@ -18,7 +18,7 @@ class Product:
             raise ValueError("Price must be a number")
         if price < 0:
             raise ValueError("Price cannot be negative")
-        if not isinstance(stock, int) or stock < 0:
+        if not isinstance(stock, int) or stock <= 0:
             raise ValueError("Stock must be a positive whole number")
         if not isinstance(expiry_date, date):
             raise ValueError("Expiry date must be a date")
@@ -43,7 +43,6 @@ class Product:
                 f"Price: RM{self.price} | Stock: {self.stock} | "
                 f"Category: {self.category} | Expiry: {self.expiry_date} | "
                 f"Prescription: {prescription}")
-
 
     def __repr__(self):
         return f"Product({self.product_id}, {self.name!r})"

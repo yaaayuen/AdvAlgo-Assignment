@@ -70,7 +70,7 @@ def read_price(prompt):
             print("Please enter a valid price")
             continue
         if not price.is_finite() or price < 0:
-            print("Price must be 0 or more")
+            raise ValueError("Price must be a number, 0 or more")
             continue
         return price
 
@@ -109,9 +109,9 @@ def print_menu():
 
 def insert_product(table, products):
     """Ask for a new product's details and insert it into the table"""
-    product_id = read_int("Product ID: ", minimum=1)
+    product_id = read_int("Enter Product ID: ", minimum=1)
     if table.locate(product_id)[0] is not None:
-        print(f"Product {product_id} already exists\n")
+        print(f"Product {product_id} already exists. Use Edit to change it\n")
         return
     name = read_text("Enter Product Name: ")
     price = read_price("Enter Price (RM): ")
@@ -134,23 +134,25 @@ def insert_product(table, products):
 
 
 def search_product(table, products):
-    """Ask for a Product ID and show the product, then time hash vs array search"""
+    """Ask for a Product ID, show the result, then time hash vs array search"""
     product_id = read_int("Enter Product ID to search: ", minimum=1)
     slot, probes = table.locate(product_id)
+
     if slot is None:
-        print(f"Product {product_id} not found (checked {probes} slot(s))\n")
-        return
-    product = table.search(product_id)
-    print("Product found")
-    print(product)
-    print(f"Found in slot [{slot}] after {probes} probe(s)\n")
+        print(f"Product {product_id} not found (checked {probes} slot(s))")
+        where = "not in array, checked all"
+    else:
+        product = table.search(product_id)
+        print("Product found")
+        print(product)
+        print(f"Found in slot [{slot}] after {probes} probe(s)")
+        where = f"position {products.index(product) + 1}"
 
     hash_ns = average_time_ns(lambda: table.locate(product_id))
     array_ns = average_time_ns(lambda: linear_search(products, product_id))
-    position = products.index(product) + 1
     print(f"Search completed in {hash_ns:,.0f} ns (Hash Table)")
     print(f"Search completed in {array_ns:,.0f} ns (Array - same record, "
-          f"position {position} of {len(products)})")
+          f"{where} {len(products)})")
     print(f"(average of {REPEATS} searches each)\n")
 
 

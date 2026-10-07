@@ -7,11 +7,13 @@ from datetime import date
 from hash_table import HashTable
 from product import Product
 
-REPEATS = 200 # How many times each search is repeated and averaged
+REPEATS = 200  # How many times each search is repeated and averaged
 RANDOM_SEED = 42  # Fixed seed so every run uses the same test data
-SIZES = [100, 1000, 10000, 100000] # Number of products in each test
-GRAPH_CASE = "Last" # Which case to draw on the graph
-GRAPH_FILE = os.path.join("results", "search_times.png")
+SIZES = [100, 1000, 10000, 100000]  # Number of products in each test
+GRAPH_CASE = "Last"  # Which case to draw on the graph
+RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "results")
+GRAPH_FILE = os.path.join(RESULTS_DIR, "search_times.png")
+
 
 def is_prime(number):
     """Return True if number is a prime number"""
@@ -136,7 +138,7 @@ def plot_results(all_results, case=GRAPH_CASE):
     ax.set_xlim(right=sizes[-1] * 3)
     fig.tight_layout()
 
-    os.makedirs("results", exist_ok=True)
+    os.makedirs(RESULTS_DIR, exist_ok=True)
     fig.savefig(GRAPH_FILE, dpi=150)
     print(f"\nGraph saved to {GRAPH_FILE}")
     plt.show()
