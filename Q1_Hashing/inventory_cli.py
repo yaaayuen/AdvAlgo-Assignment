@@ -133,13 +133,14 @@ def insert_product(table):
 def search_product(table):
     """Ask for a Product ID and show the product if it exists"""
     product_id = read_int("Enter Product ID to search: ", minimum=1)
-    try:
-        product = table.search(product_id)
-    except KeyError:
-        print(f"Product {product_id} not found\n")
+    slot, probes = table.locate(product_id)
+    if slot is None:
+        print(f"Product {product_id} not found (checked {probes} slot(s))\n")
         return
+    product = table.search(product_id)
     print("Product found")
-    print(f"{product}\n")
+    print(product)
+    print(f"Found in slot [{slot}] after {probes} probe(s)\n")
 
 
 def edit_product(table):
