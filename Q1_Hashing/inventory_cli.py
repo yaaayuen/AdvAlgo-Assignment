@@ -3,6 +3,7 @@
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
+from experiment import average_time_ns, linear_search, REPEATS
 from hash_table import HashTable
 from product import Product
 
@@ -22,11 +23,12 @@ PRELOADED_PRODUCTS = [
 ]
 
 
-def load_preloaded(table):
+def load_preloaded(table, products):
     """Insert the preloaded products and show which slot each one used"""
     print("Loading preloaded products...")
     for product in PRELOADED_PRODUCTS:
         slot = table.insert(product.product_id, product)
+        products.append(product)
         _, probes = table.locate(product.product_id)
         note = f" (collision: {probes} probes)" if probes > 1 else ""
         print(f"{product.product_id} {product.name:<24} ->  slot {slot:>3}{note}")
@@ -105,7 +107,7 @@ def print_menu():
     print("6. Exit")
 
 
-def insert_product(table):
+def insert_product(table, products):
     """Ask for a new product's details and insert it into the table"""
     product_id = read_int("Product ID: ", minimum=1)
     if table.locate(product_id)[0] is not None:
@@ -124,14 +126,15 @@ def insert_product(table):
     try:
         product = Product(product_id, name, price, stock, category, expiry, needs_rx)
         slot = table.insert(product_id, product)
+        products.append(product)
     except (ValueError, OverflowError) as error:
         print(f"Could not insert product: {error}\n")
         return
     print(f"Product {product_id} inserted successfully into slot [{slot}]\n")
 
 
-def search_product(table):
-    """Ask for a Product ID and show the product if it exists"""
+def search_product(table, products):
+    """Ask for a Product ID and show the product, then time hash vs array search"""
     product_id = read_int("Enter Product ID to search: ", minimum=1)
     slot, probes = table.locate(product_id)
     if slot is None:
@@ -142,8 +145,16 @@ def search_product(table):
     print(product)
     print(f"Found in slot [{slot}] after {probes} probe(s)\n")
 
+    hash_ns = average_time_ns(lambda: table.locate(product_id))
+    array_ns = average_time_ns(lambda: linear_search(products, product_id))
+    position = products.index(product) + 1
+    print(f"Search completed in {hash_ns:,.0f} ns (Hash Table)")
+    print(f"Search completed in {array_ns:,.0f} ns (Array - same record, "
+          f"position {position} of {len(products)})")
+    print(f"(average of {REPEATS} searches each)\n")
 
-def edit_product(table):
+
+def edit_product(table, products):
     """Change the price and stock of an existing product"""
     product_id = read_int("Enter Product ID to edit: ", minimum=1)
     try:
@@ -157,10 +168,11 @@ def edit_product(table):
 
     updated = Product(old.product_id, old.name, price, stock, old.category, old.expiry_date, old.requires_prescription)
     table.update(product_id, updated)
+    products[products.index(old)] = updated
     print(f"Product updated: {updated}\n")
 
 
-def delete_product(table):
+def delete_product(table, products):
     """Delete an existing product after the user confirms"""
     product_id = read_int("Enter Product ID to delete: ", minimum=1)
     try:
@@ -172,25 +184,27 @@ def delete_product(table):
         print("Delete cancelled\n")
         return
     table.delete(product_id)
+    products.remove(product)
     print(f"Deleted: {product.name}\n")
 
 
 def main():
     """Load the preloaded products, then run the menu until the user exits"""
     inventory = HashTable(TABLE_CAPACITY)
-    load_preloaded(inventory)
+    products = []
+    load_preloaded(inventory, products)
 
     while True:
         print_menu()
         choice = input("Enter choice: ").strip()
         if choice == "1":
-            insert_product(inventory)
+            insert_product(inventory, products)
         elif choice == "2":
-            search_product(inventory)
+            search_product(inventory, products)
         elif choice == "3":
-            edit_product(inventory)
+            edit_product(inventory, products)
         elif choice == "4":
-            delete_product(inventory)
+            delete_product(inventory, products)
         elif choice == "5":
             inventory.display()
             print()

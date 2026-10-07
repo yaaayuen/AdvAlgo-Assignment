@@ -4,8 +4,6 @@ import random
 import time
 from datetime import date
 
-import matplotlib.pyplot as plt
-
 from hash_table import HashTable
 from product import Product
 
@@ -105,6 +103,8 @@ def main():
 
 def plot_results(all_results, case=GRAPH_CASE):
     """Draw hash table vs array search time for one case and save it as a PNG"""
+    import matplotlib.pyplot as plt
+
     sizes = list(all_results)
     hash_times = []
     array_times = []
