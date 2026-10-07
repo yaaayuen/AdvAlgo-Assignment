@@ -2,8 +2,10 @@
 from datetime import date
 from decimal import Decimal, InvalidOperation
 
+
 class Product:
     """One pharmacy product (e.g. medicine) in the inventory"""
+
     def __init__(self, product_id, name, price, stock, category, expiry_date, requires_prescription=False):
         if not isinstance(product_id, int) or product_id < 0:
             raise ValueError("Product ID must be a positive whole number")
@@ -41,6 +43,11 @@ class Product:
                 f"Price: RM{self.price} | Stock: {self.stock} | "
                 f"Category: {self.category} | Expiry: {self.expiry_date} | "
                 f"Prescription: {prescription}")
+
+
+    def __repr__(self):
+        return f"Product({self.product_id}, {self.name!r})"
+
 
 if __name__ == "__main__":
     p = Product(1042, "Paracetamol 500mg", "5.9", 120, "Painkiller",

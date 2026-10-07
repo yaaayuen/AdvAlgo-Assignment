@@ -1,21 +1,27 @@
 """Generic hash table using open addressing with linear probing"""
+
+
 class _Entry:
     """One occupied slot: has a key and a value"""
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
 
+
 # Unique marker placed in a slot when its entry is deleted (tombstone).
 _TOMBSTONE = object()
 
+
 class HashTable:
     """Hash table that stores key-value pairs using linear probing"""
+
     def __init__(self, capacity=101):
         if capacity < 1:
             raise ValueError("Capacity must be greater than 0")
         self._capacity = capacity
-        self._slots = [None] * capacity # None means empty, never used
-        self._size = 0 # number of keys stored
+        self._slots = [None] * capacity  # None means empty, never used
+        self._size = 0  # number of keys stored
 
     def __len__(self):
         return self._size
@@ -46,7 +52,7 @@ class HashTable:
         first_tombstone = None
 
         while True:
-            slot = self._slots[idx] # Reads the slot once
+            slot = self._slots[idx]  # Reads the slot once
             if slot is None:
                 break
             if slot is _TOMBSTONE:
@@ -69,7 +75,7 @@ class HashTable:
         self._size += 1
         return target
 
-    def locate (self, key):
+    def locate(self, key):
         """Return (slot index, probes) for key, or (None, probes) if absent."""
         idx = self._hash(key)
         start = idx
@@ -120,6 +126,7 @@ class HashTable:
             else:
                 state = f"{slot.key!r} -> {slot.value!r}"
             print(f"[{i}] {state}")
+
 
 if __name__ == "__main__":
     table = HashTable(7)
