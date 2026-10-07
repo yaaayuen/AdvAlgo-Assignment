@@ -75,7 +75,7 @@ class HashTable:
         start = idx
         probes = 1
         while True:
-            slot = self.slots[idx]
+            slot = self._slots[idx]
             if slot is None:
                 return None, probes
             if slot is not _TOMBSTONE and slot.key == key:
@@ -97,7 +97,7 @@ class HashTable:
         idx, _ = self.locate(key)
         if idx is None:
             raise KeyError(key)
-        self.slots[idx].value = value
+        self._slots[idx].value = value
         return idx
 
     def delete(self, key):
