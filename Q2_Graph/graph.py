@@ -1,3 +1,5 @@
+from collections import deque
+
 """Generic unweighted directed graph stored as adjacency sets"""
 
 class Graph:
@@ -55,6 +57,31 @@ class Graph:
         return list(self._outgoing[vertex])
 
 
+    def remove_edge(self, from_vertex, to_vertex):
+        """Remove the edge from_vertex -> to_vertex. Raise ValueError if it does not exist"""
+        self._check_vertex(from_vertex)
+        self._check_vertex(to_vertex)
+        if to_vertex not in self._outgoing[from_vertex]:
+            raise ValueError(f"Edge {from_vertex!r} -> {to_vertex!r} does not exist")
+        self._outgoing[from_vertex].remove(to_vertex)
+        self._incoming[to_vertex].remove(from_vertex)
+
+    def has_path(self, start, target):
+        """Return True if target can be reached from start by following edges (BFS)"""
+        self._check_vertex(start)
+        self._check_vertex(target)
+        visited = {start}
+        queue = deque([start])
+        while queue:
+            current = queue.popleft()
+            if current == target:
+                return True
+            for neighbour in self._outgoing[current]:
+                if neighbour not in visited:
+                    visited.add(neighbour)
+                    queue.append(neighbour)
+        return False
+
 if __name__ == "__main__":
     graph = Graph()
     for code in ["CS101", "MA101", "CS201", "CS202", "CS301", "CS302", "CS303", "CS401"]:
@@ -76,3 +103,17 @@ if __name__ == "__main__":
             graph.add_edge(*bad_edge)
         except (ValueError, KeyError) as error:
             print("Rejected:", error)
+
+    print("\nPath CS101 -> CS401?", graph.has_path("CS101", "CS401"))
+    print("Path CS401 -> CS101?", graph.has_path("CS401", "CS101"))
+    print("Path MA101 -> CS302?", graph.has_path("MA101", "CS302"))
+    print("Would CS401 -> CS101 create a cycle?", graph.has_path("CS101", "CS401"))
+
+    graph.remove_edge("CS202", "CS303")
+    print("\nAfter removing CS202 -> CS303:")
+    print("Incoming to CS303:", sorted(graph.list_incoming_adjacent_vertex("CS303")))
+    print("Outgoing from CS202:", sorted(graph.list_outgoing_adjacent_vertex("CS202")))
+    try:
+        graph.remove_edge("CS202", "CS303")
+    except ValueError as error:
+        print("Rejected:", error)
