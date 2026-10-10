@@ -140,7 +140,7 @@ def search_product(table, products):
 
     if slot is None:
         print(f"Product {product_id} not found (checked {probes} slot(s))")
-        where = f"not found after checking all"
+        where = f"not found after checking all {len(products)}"
     else:
         product = table.search(product_id)
         print("Product found")
