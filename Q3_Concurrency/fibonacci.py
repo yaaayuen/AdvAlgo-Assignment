@@ -2,7 +2,7 @@
 import time
 
 def fib(n):
-    """Return the nth Fibonacci number using naive recursion 0(2^n)"""
+    """Return the nth Fibonacci number using naive recursion OS(2^n)"""
     if n < 2:
         return n
     return fib(n - 1) + fib(n - 2)
@@ -16,7 +16,7 @@ def count_calls(n):
 
 
 def fib_iterative(n):
-    """Return the Fibonacci number with a loop 0(n), used to check answers"""
+    """Return the Fibonacci number with a loop O(n), used to check answers"""
     previous, current = 0, 1
     for _ in range(n):
         previous, current = current, previous + current

@@ -1,7 +1,8 @@
 """Course entity for the course-prerequisite system"""
 from enum import Enum
 
-class Level (Enum):
+
+class Level(Enum):
     """Whether a course is compulsory or elective"""
     CORE = "Core"
     ELECTIVE = "Elective"
@@ -9,6 +10,7 @@ class Level (Enum):
 
 class Course:
     """One university course"""
+
     def __init__(self, code, name, credit_hours, level, description=""):
         code = code.strip().upper()
         if not code:
@@ -26,11 +28,9 @@ class Course:
         self.level = level
         self.description = description
 
-
     def is_elective(self):
         """Return TRUE if the course is elective"""
         return self.level is Level.ELECTIVE
-
 
     def full_details(self):
         """Return every detail, whatever the level (mandatory feature b)"""
@@ -42,17 +42,14 @@ class Course:
             lines.append(f"Description: {self.description}")
         return "\n".join(lines)
 
-
     def profile(self):
         """Advanced feature b: electives show only the name, core shows everything"""
         if self.is_elective():
             return f"Name: {self.name} (elective: other details are hidden)"
         return self.full_details()
 
-
     def __str__(self):
         return f"{self.code} - {self.name}"
-
 
     def __repr__(self):
         return f"Course({self.code!r})"

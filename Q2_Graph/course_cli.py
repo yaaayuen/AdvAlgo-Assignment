@@ -1,8 +1,7 @@
 """Menu-driven university course prerequisite system"""
-from unicodedata import decimal
-
 from course import Course, Level
 from course_data import build_course_system, MAX_COURSES
+
 
 def read_course_code(prompt, courses):
     """Keeps asking until the user types the code of an existing course, blank input returns None"""
@@ -126,7 +125,7 @@ def add_course(graph, courses):
     name = read_text("Enter Course Name: ")
     credit_hours = read_positive_int("Enter Credit Hours: ")
     level = read_level("Core or Elective? (C/E): ")
-    description = input ("Enter Course Description (optional): ").strip()
+    description = input("Enter Course Description (optional): ").strip()
 
     course = Course(code, name, credit_hours, level, description)
     graph.add_vertex(course.code)

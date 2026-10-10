@@ -1,13 +1,13 @@
+"""Generic unweighted directed graph stored as adjacency sets"""
 from collections import deque
 
-"""Generic unweighted directed graph stored as adjacency sets"""
 
 class Graph:
     """Directed graph. A vertex can be any hashable value"""
-    def __init__(self):
-        self._outgoing = {} # vertex -> set of vertices it points TO
-        self._incoming = {} # vertex -> set of vertices that points to IT
 
+    def __init__(self):
+        self._outgoing = {}  # vertex -> set of vertices it points TO
+        self._incoming = {}  # vertex -> set of vertices that points to IT
 
     def add_vertex(self, vertex):
         """Add a new vertex with no edges. Raise ValueError if it already exists"""
@@ -16,22 +16,18 @@ class Graph:
         self._outgoing[vertex] = set()
         self._incoming[vertex] = set()
 
-
     def has_vertex(self, vertex):
         """Return True if the vertex is in the graph"""
         return vertex in self._outgoing
-
 
     def vertices(self):
         """Return a list of all vertices, in the order they were added"""
         return list(self._outgoing)
 
-
     def _check_vertex(self, vertex):
         """Raise KeyError if the vertex is not in the graph"""
         if vertex not in self._outgoing:
             raise KeyError(f"Vertex {vertex!r} does not exist")
-
 
     def add_edge(self, from_vertex, to_vertex):
         """Add a directed edge from_vertex -> to_vertex"""
@@ -44,18 +40,15 @@ class Graph:
         self._outgoing[from_vertex].add(to_vertex)
         self._incoming[to_vertex].add(from_vertex)
 
-
     def list_incoming_adjacent_vertex(self, vertex):
         """Return the vertices that have an edge coming INTO this vertex"""
         self._check_vertex(vertex)
         return list(self._incoming[vertex])
 
-
     def list_outgoing_adjacent_vertex(self, vertex):
         """Return the vertices this vertex has an edge going OUT to"""
         self._check_vertex(vertex)
         return list(self._outgoing[vertex])
-
 
     def remove_edge(self, from_vertex, to_vertex):
         """Remove the edge from_vertex -> to_vertex. Raise ValueError if it does not exist"""
@@ -81,6 +74,7 @@ class Graph:
                     visited.add(neighbour)
                     queue.append(neighbour)
         return False
+
 
 if __name__ == "__main__":
     graph = Graph()

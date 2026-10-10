@@ -7,19 +7,20 @@ class Product:
     """One pharmacy product (e.g. medicine) in the inventory"""
 
     def __init__(self, product_id, name, price, stock, category, expiry_date, requires_prescription=False):
-        if not isinstance(product_id, int) or product_id < 0:
+        if not isinstance(product_id, int) or product_id <= 0:
             raise ValueError("Product ID must be a positive whole number")
         if not name.strip():
             raise ValueError("Product name cannot be empty")
-
         try:
             price = Decimal(str(price))
         except InvalidOperation:
             raise ValueError("Price must be a number")
-        if price < 0:
-            raise ValueError("Price cannot be negative")
-        if not isinstance(stock, int) or stock <= 0:
-            raise ValueError("Stock must be a positive whole number")
+        if not price.is_finite() or price < 0:
+            raise ValueError("Price must be a number, 0 or more")
+        if not isinstance(stock, int) or stock < 0:
+            raise ValueError("Stock must be a whole number, 0 or more")
+        if not category.strip():
+            raise ValueError("Category cannot be empty")
         if not isinstance(expiry_date, date):
             raise ValueError("Expiry date must be a date")
 

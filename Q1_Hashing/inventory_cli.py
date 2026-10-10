@@ -70,7 +70,7 @@ def read_price(prompt):
             print("Please enter a valid price")
             continue
         if not price.is_finite() or price < 0:
-            raise ValueError("Price must be a number, 0 or more")
+            print("Price must be a number, 0 or more")
             continue
         return price
 
@@ -140,19 +140,18 @@ def search_product(table, products):
 
     if slot is None:
         print(f"Product {product_id} not found (checked {probes} slot(s))")
-        where = "not in array, checked all"
+        where = f"not found after checking all"
     else:
         product = table.search(product_id)
         print("Product found")
         print(product)
         print(f"Found in slot [{slot}] after {probes} probe(s)")
-        where = f"position {products.index(product) + 1}"
+        where = f"position {products.index(product) + 1} of {len(products)}"
 
     hash_ns = average_time_ns(lambda: table.locate(product_id))
     array_ns = average_time_ns(lambda: linear_search(products, product_id))
     print(f"Search completed in {hash_ns:,.0f} ns (Hash Table)")
-    print(f"Search completed in {array_ns:,.0f} ns (Array - same record, "
-          f"{where} {len(products)})")
+    print(f"Search completed in {array_ns:,.0f} ns (Array - {where})")
     print(f"(average of {REPEATS} searches each)\n")
 
 
