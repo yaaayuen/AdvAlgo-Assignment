@@ -63,6 +63,8 @@ def print_menu():
     print("4. View Courses Unlocked by a Course")
     print("5. Add Course")
     print("6. View Course Profile")
+    print("7. Add Prerequisites")
+    print("8. Remove Prerequisite")
     print("9. Exit")
 
 
@@ -141,6 +143,53 @@ def view_course_profile(graph, courses):
     print()
 
 
+def add_prerequisite(graph, courses):
+    """Add an edge prerequisite to one course. No self links, duplicates and cycles"""
+    course = read_course_code("Enter Course Code that needs a prerequisite (blank to cancel): ", courses)
+    if course is None:
+        return
+    prerequisite = read_course_code("Enter the Prerequisite Course Code (blank to cancel): ", courses)
+    if prerequisite is None:
+        return
+    if prerequisite == course:
+        print("A course cannot be a prerequisite of itself\n")
+        return
+    if prerequisite in graph.list_incoming_adjacent_vertex(course):
+        print(f"{prerequisite} is already a prerequisite of {course}\n")
+        return
+    if graph.has_path(course, prerequisite):
+        print(f"Cannot add: {course} already leads to {prerequisite}, this would create a cycle\n")
+        return
+
+    graph.add_edge(prerequisite, course)
+    print(f"{prerequisite} is now a prerequisite of {course}\n")
+
+
+def remove_prerequisite(graph, courses):
+    """Remove the edge prerequisite from a course, showing the current prerequisites first"""
+    course = read_course_code("Enter the Course to remove a prerequisite from (blank to cancel): ", courses)
+    if course is None:
+        return
+
+    current = graph.list_incoming_adjacent_vertex(course)
+    if not current:
+        print(f"{course} has no prerequisites to remove\n")
+        return
+
+    print(f"Current prerequisites of {courses[course]}: ")
+    print("\n".join(course_lines(current, courses)))
+
+    prerequisite = read_course_code("Enter the Prerequisite to remove (blank to cancel): ", courses)
+    if prerequisite is None:
+        return
+    if prerequisite not in current:
+        print(f"{prerequisite} is not a prerequisite of {course}\n")
+        return
+
+    graph.remove_edge(prerequisite, course)
+    print(f"Removed: {prerequisite} is no longer a prerequisite of {course}\n")
+
+
 def main():
     """Build the course system, run the menu"""
     graph, courses = build_course_system()
@@ -160,11 +209,15 @@ def main():
             add_course(graph, courses)
         elif choice == "6":
             view_course_profile(graph, courses)
+        elif choice == "7":
+            add_prerequisite(graph, courses)
+        elif choice == "8":
+            remove_prerequisite(graph, courses)
         elif choice == "9":
             print("Exiting program...")
             break
         else:
-            print("Please enter a valid menu number")
+            print("Please enter a valid menu number\n")
 
 
 if __name__ == "__main__":
