@@ -2,7 +2,7 @@
 import time
 
 def fib(n):
-    """Return the nth Fibonacci number using naive recursion OS(2^n)"""
+    """Return the nth Fibonacci number using naive recursion O(2^n)"""
     if n < 2:
         return n
     return fib(n - 1) + fib(n - 2)
